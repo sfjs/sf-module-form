@@ -154,7 +154,7 @@ module.exports = {
     },
     showFieldsMessages: function (messages, type) {
         var that = this,
-            notFound = sf.helpers.tools.iterateInputs(this.node, messages, function (el, message) {
+            notFound = sf.iterateInputs(this.node, messages, function (el, message) {
                 that.showFieldMessage(el, message, type)
             });
 
