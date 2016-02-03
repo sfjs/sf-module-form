@@ -106,7 +106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var formMessages = __webpack_require__(20);
 	var iterateInputs = __webpack_require__(25);
 	__webpack_require__(26);
-	_sf2.default.iterateInputs = iterateInputs;
+	
 	/**
 	 * Spiral Forms
 	 * @param {Object} sf
@@ -151,6 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.addEvents();
 	
 	    this.events = new this.sf.modules.core.Events(["beforeSend", "success", "error", "always"]);
+	    sf.iterateInputs = iterateInputs;
 	};
 	
 	/**
