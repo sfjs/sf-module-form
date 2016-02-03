@@ -5,7 +5,7 @@ import sf from 'sf';//resolved in webpack's "externals"
 var formMessages = require("./formMessages");
 var iterateInputs = require("./iterateInputs");
 require("./formToObject");
-sf.iterateInputs = iterateInputs;
+
 /**
  * Spiral Forms
  * @param {Object} sf
@@ -51,6 +51,7 @@ Form.prototype._construct = function (sf, node, options) {
     this.addEvents();
 
     this.events = new this.sf.modules.core.Events(["beforeSend", "success", "error", "always"]);
+    sf.iterateInputs = iterateInputs;
 };
 
 /**
