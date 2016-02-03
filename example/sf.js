@@ -1350,83 +1350,6 @@ var tools = {
 module.exports = tools;
 },{}],12:[function(require,module,exports){
 "use strict";
-//plugin in formMessages to iterate form inputs
-
-//todo comment all of this
-//todo ask @Systerr the reason of variable 'prefix'
-var notFound = [];
-
-/**
- *
- * @param {HTMLElement} context
- * @param {Object} names
- * @param {Function} callback
- * @param {String} [prefix]
- */
-function findNodes(context, names, callback, prefix) {
-    for (var name in names) {
-        if (!names.hasOwnProperty(name)) {
-            continue;
-        }
-
-        var partOfSelector = (prefix) ? prefix + "[" + name + "]" : name,
-            type = Object.prototype.toString.call(names[name]),
-            selector = "[name='" + partOfSelector + "']";
-        switch (type) {
-            case '[object Object]':
-                findNodes(context, names[name], callback, partOfSelector);//call recursive
-                break;
-            case '[object Array]':
-                names[name].forEach(function (el) {
-                    "use strict";
-                    //TODO refactor this should call recursive
-                    var sel = "[name='" + partOfSelector + "[]']" + "[value='" + el + "']";
-                    var nodes = context.querySelectorAll(sel);
-                    if (nodes.length === 0) {
-                        notFound.push(sel);
-                    }
-                    for (var i = 0, max = nodes.length; i < max; i++) {
-                        callback(nodes[i], true);
-                    }
-                });
-                break;
-            case '[object String]':
-            case '[object Number]':
-                var nodes = context.querySelectorAll(selector);
-                if (nodes.length === 0) {
-                    var obj = {};
-                    obj[partOfSelector] = names[name];
-                    notFound.push(obj);
-                }
-                for (var i = 0, max = nodes.length; i < max; i++) {
-                    callback(nodes[i], names[name]);
-                }
-                break;
-
-            default :
-                console.error("unknown type -", type, " and message", names[name]);
-        }
-    }
-}
-
-/**
- * @param {HTMLElement} context
- * @param {Object} names
- * @param {Function} callback
- * @param {String} [prefix]
- */
-var iterateInputs = function (context, names, callback, prefix) {
-    notFound = [];
-    findNodes(context, names, callback, prefix);
-    if (notFound.length !== 0) {
-        console.log("Some element not found in form", notFound);
-    }
-    return notFound;
-};
-
-module.exports = iterateInputs;
-},{}],13:[function(require,module,exports){
-"use strict";
 //https://github.com/spiral/sf.js
 
 //Add console shim for old IE
@@ -1464,16 +1387,12 @@ _sf.ajax = new _sf.core.Ajax(window.csrfToken ? {//TODO move to spiral bindings
 } : null);
 require("./core/ajax/baseActions.js")(_sf);
 
-//Form
-_sf.tools.iterateInputs = require("./helpers/tools/iterateInputs.js");
-_sf.modules.helpers.tools.iterateInputs = _sf.tools.iterateInputs;//todo remove
-require("./vendor/formToObject");
 require("./instances/lock/Lock.js");
 
 if (typeof exports === "object" && exports) {
     module.exports = _sf;
 }
-},{"./core/ajax/baseActions.js":6,"./core/events/baseEvents.js":7,"./helpers/tools/iterateInputs.js":12,"./instances/lock/Lock.js":14,"./sf":15,"./shim/Object.assign":16,"./shim/console":17,"./vendor/formToObject":18}],14:[function(require,module,exports){
+},{"./core/ajax/baseActions.js":6,"./core/events/baseEvents.js":7,"./instances/lock/Lock.js":13,"./sf":14,"./shim/Object.assign":15,"./shim/console":16}],13:[function(require,module,exports){
 "use strict";
 
 (function(sf) {
@@ -1587,7 +1506,7 @@ if (typeof exports === "object" && exports) {
 
 })(sf);
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var core = {
     Ajax: require("./core/Ajax"),
     BaseDOMConstructor: require("./core/BaseDOMConstructor"),
@@ -1615,7 +1534,7 @@ var sf = {
 };
 
 module.exports = sf;
-},{"./core/Ajax":1,"./core/BaseDOMConstructor":2,"./core/DomMutations":3,"./core/Events":4,"./core/InstancesController":5,"./helpers/DOMEvents":8,"./helpers/LikeFormData":9,"./helpers/domTools":10,"./helpers/tools":11}],16:[function(require,module,exports){
+},{"./core/Ajax":1,"./core/BaseDOMConstructor":2,"./core/DomMutations":3,"./core/Events":4,"./core/InstancesController":5,"./helpers/DOMEvents":8,"./helpers/LikeFormData":9,"./helpers/domTools":10,"./helpers/tools":11}],15:[function(require,module,exports){
 /**
  * Object.assign polyfill
  * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
@@ -1643,7 +1562,7 @@ if (typeof Object.assign != 'function') {
         };
     })();
 }
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Avoid `console` errors in browsers that lack a console.
  */
@@ -1669,178 +1588,7 @@ if (typeof Object.assign != 'function') {
     }
 }());
 
-},{}],18:[function(require,module,exports){
-/*! github.com/serbanghita/formToObject.js 1.0.1  (c) 2013 Serban Ghita <serbanghita@gmail.com> @licence MIT */
-
-(function(){
-
-    // Constructor.
-	var formToObject = function( formRef ){
-
-		if( !formRef ){ return false; }
-
-		this.formRef       = formRef;
-		this.keyRegex      = /[^\[\]]+/g;
-		this.$form         = null;
-		this.$formElements = [];
-		this.formObj       = {};
-
-		if( !this.setForm() ){ return false; }
-		if( !this.setFormElements() ){ return false; }
-
-		return this.setFormObj();
-
-	};
-
-	// Set the main form object we are working on.
-	formToObject.prototype.setForm = function(){
-
-		switch( typeof this.formRef ){
-
-			case 'string':
-				this.$form = document.getElementById( this.formRef );
-			break;
-
-			case 'object':
-				if( this.isDomNode(this.formRef) ){
-					this.$form = this.formRef;
-				}
-			break;
-
-		}
-
-		return this.$form;
-
-	};
-
-	// Set the elements we need to parse.
-	formToObject.prototype.setFormElements = function(){
-		this.$formElements = this.$form.querySelectorAll('input, textarea, select');
-		return this.$formElements.length;
-	};
-
-	// Check to see if the object is a HTML node.
-	formToObject.prototype.isDomNode = function( node ){
-		return typeof node === "object" && "nodeType" in node && node.nodeType === 1;
-	};
-
-	// Iteration through arrays and objects. Compatible with IE.
-	formToObject.prototype.forEach = function( arr, callback ){
-
-		if([].forEach){
-			return [].forEach.call(arr, callback);
-		}
-
-		var i;
-		for(i in arr){
-			// Object.prototype.hasOwnProperty instead of arr.hasOwnProperty for IE8 compatibility.
-			if( Object.prototype.hasOwnProperty.call(arr,i) ){
-				callback.call(arr, arr[i]);
-			}
-		}
-
-		return;
-
-	}
-
-    // Recursive method that adds keys and values of the corresponding fields.
-	formToObject.prototype.addChild = function( result, domNode, keys, value ){
-
-		// #1 - Single dimensional array.
-		if(keys.length === 1){
-
-			// We're only interested in the radio that is checked.
-			if( domNode.nodeName === 'INPUT' && domNode.type === 'radio' ) {
-				if( domNode.checked ){
-					return result[keys] = value;
-				} else {
-					return;
-				}
-			}
-
-			// Checkboxes are a special case. We have to grab each checked values
-			// and put them into an array.
-			if( domNode.nodeName === 'INPUT' && domNode.type === 'checkbox' ) {
-
-				if( domNode.checked ){
-
-					if( !result[keys] ){
-						result[keys] = [];
-					}
-					return result[keys].push( value );
-
-				} else {
-					return;
-				}
-
-			}
-
-			// Multiple select is a special case.
-			// We have to grab each selected option and put them into an array.
-			if( domNode.nodeName === 'SELECT' && domNode.type === 'select-multiple' ) {
-
-				result[keys] = [];
-				var DOMchilds = domNode.querySelectorAll('option[selected]');
-				if( DOMchilds ){
-					this.forEach(DOMchilds, function(child){
-						result[keys].push( child.value );
-					});
-				}
-				return;
-
-			}
-
-			// Fallback. The default one to one assign.
-			result[keys] = value;
-
-		}
-
-		// #2 - Multi dimensional array.
-		if(keys.length > 1) {
-
-			if(!result[keys[0]]){
-				result[keys[0]] = {};
-			}
-
-			return this.addChild(result[keys[0]], domNode, keys.splice(1, keys.length), value);
-
-		}
-
-		return result;
-
-	};
-
-	formToObject.prototype.setFormObj = function(){
-
-		var test, i = 0;
-
-		for(i = 0; i < this.$formElements.length; i++){
-			// Ignore the element if the 'name' attribute is empty.
-			// Ignore the 'disabled' elements.
-			if( this.$formElements[i].name && !this.$formElements[i].disabled ) {
-				test = this.$formElements[i].name.match( this.keyRegex );
-				this.addChild( this.formObj, this.$formElements[i], test, this.$formElements[i].value );
-			}
-		}
-
-		return this.formObj;
-
-	}
-
-	// AMD/requirejs: Define the module
-	if( typeof define === 'function' && define.amd ) {
-		define(function () {
-			return formToObject;
-		});
-	}
-	// Browser: Expose to window
-	else {
-		window.formToObject = formToObject;
-	}
-
-})();
-
-},{}]},{},[13])
+},{}]},{},[12])
 
 
 //# sourceMappingURL=sf.js.map
