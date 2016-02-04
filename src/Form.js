@@ -22,7 +22,7 @@ var Form = function (sf, node, options) {
 /**
  * @lends sf.Form.prototype
  */
-Form.prototype = sf.modulePrototype;
+Form.prototype = sf.createModulePrototype();
 
 /**
  * Name to register

@@ -118,7 +118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * @lends sf.Form.prototype
 	 */
-	Form.prototype = _sf2.default.modulePrototype;
+	Form.prototype = _sf2.default.createModulePrototype();
 	
 	/**
 	 * Name to register
