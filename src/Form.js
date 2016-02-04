@@ -22,7 +22,7 @@ var Form = function (sf, node, options) {
 /**
  * @lends sf.Form.prototype
  */
-Form.prototype = Object.create(sf.modules.core.BaseDOMConstructor.prototype);
+Form.prototype = sf.modulePrototype;
 
 /**
  * Name to register
@@ -193,7 +193,7 @@ Form.prototype.mixMessagesOptions = function () {
  * @param {Event} e submit event
  */
 Form.prototype.onSubmit = function (e) {
-    if (this.sf.instancesController.getInstance('lock', this.node)) {//on lock we should'n do any actions
+    if (this.sf.getInstance('lock', this.node)) {//on lock we should'n do any actions
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -230,11 +230,11 @@ Form.prototype.lock = function (remove) {
         return;
     }
     if (remove) {
-        if (!this.sf.instancesController.removeInstance("lock", this.node)) {
+        if (!this.sf.removeInstance("lock", this.node)) {
             console.warn("You try to remove 'lock' instance, but it is not available or not started");
         }
     } else {
-        if (!this.sf.instancesController.addInstance("lock", this.node, {type: this.options.lockType})) {
+        if (!this.sf.addInstance("lock", this.node, {type: this.options.lockType})) {
             console.warn("You try to add 'lock' instance, but it is not available or already started");
         }
     }
