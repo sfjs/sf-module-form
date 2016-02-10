@@ -390,7 +390,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @param {Object} opt options
 	 */
 	Form.prototype.setOptions = function (opt) {
-	    this.options = this.sf.modules.helpers.tools.extend(this.options, opt);
+	    this.options = (0, _assign2.default)(this.options, opt);
 	};
 	
 	/**

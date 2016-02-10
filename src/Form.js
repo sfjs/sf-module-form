@@ -297,7 +297,7 @@ Form.prototype.getFormData = function () {
  * @param {Object} opt options
  */
 Form.prototype.setOptions = function (opt) {
-    this.options = this.sf.modules.helpers.tools.extend(this.options, opt);
+    this.options = Object.assign(this.options, opt);
 };
 
 /**
