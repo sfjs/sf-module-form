@@ -59,7 +59,7 @@ module.exports = {
             isMsg = true;
         }
 
-        if (!isMsg) {
+        if (!isMsg && answer.status > 300) {
             var error = answer.status ? answer.status + " " : "";
             error += answer.statusText ? answer.statusText : "";
             error += answer.data && !answer.statusText ? answer.data : "";
