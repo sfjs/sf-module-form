@@ -7,46 +7,49 @@ const plugins = require('./webpack/plugins');
 
 module.exports = {
 
-  entry: {
-      "sf.form": ['./src/index.js']
-  },
+    entry: {
+        "sf.form": ['./src/index.js']
+    },
 
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name].js',
-    publicPath: '/',
-    sourceMapFilename: '[name].js.map',
-    chunkFilename: '[id].chunk.js'
-  },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: '[name].js',
+        publicPath: '/',
+        sourceMapFilename: '[name].js.map',
+        chunkFilename: '[id].chunk.js',
+        libraryTarget: "umd",
+        library: "sf-form",
+        umdNamedDefine: true
+    },
 
-  devtool: process.env.NODE_ENV === 'production' ?
-    'source-map' :
-    'inline-source-map',
+    devtool: process.env.NODE_ENV === 'production' ?
+        'source-map' :
+        'inline-source-map',
 
-  resolve: {
-    extensions: [
-      '.js',
-      '.json'
-    ]
-  },
+    resolve: {
+        extensions: [
+            '.js',
+            '.json'
+        ]
+    },
 
-  plugins: plugins,
+    plugins: plugins,
 
-  devServer: {
-    historyApiFallback: {index: '/'}
-  },
+    devServer: {
+        historyApiFallback: {index: '/'}
+    },
 
-  module: {
-    rules: [
-      loaders.jsmap,
-      loaders.eslint,
+    module: {
+        rules: [
+            loaders.jsmap,
+            loaders.eslint,
 
-      loaders.js
-    ]
-  },
-  externals: {
-    "sf-core": {
-      commonjs: "sf-core"
+            loaders.js
+        ]
+    },
+    externals: {
+        "sf-core": {
+            commonjs: "sf-core"
+        }
     }
-  }
 };
