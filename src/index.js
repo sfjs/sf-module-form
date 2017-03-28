@@ -1,6 +1,6 @@
 "use strict";
-import sf from 'sf-core';
-import Form from './Form';
+var sf = require('sf-core');
+var Form = require('./Form').default;
 
 sf.registerInstanceType(Form, "js-sf-form");
 

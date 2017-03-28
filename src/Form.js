@@ -325,4 +325,4 @@ Form.prototype.die = function () {
     // TODO don't we need to remove it's addons and plugins?
 };
 
-export {Form as default};
+export default Form;
