@@ -1,10 +1,10 @@
 "use strict";
 
-import sf from 'sf';//resolved in webpack's "externals"
+import sf from 'sf-core';
 
 var formMessages = require("./formMessages");
 var iterateInputs = require("./iterateInputs");
-require("./formToObject");
+import FormToObject from './formToObject';
 
 /**
  * Spiral Forms
@@ -38,9 +38,9 @@ Form.prototype.name = "form";
  * @private
  */
 Form.prototype._construct = function (sf, node, options) {
-    this.init(sf, node, options);//call parent
+    this.init(sf, node, options);
     this.mixMessagesOptions();
-    //this.options.fillFrom && this.fillFieldsFrom();//id required to fill form
+    // this.options.fillFrom && this.fillFieldsFrom(); // id required to fill form
 
     /**
      * @extends DOMEvents
@@ -64,15 +64,15 @@ Form.prototype.optionsToGrab = {
     /**
      * Link to form
      */
-    context: {
-        processor: function (node, val) { //processor
+    "context": {
+        processor: function (node, val) { // Processor
             return node;
         }
     },
     /**
      * Link to 'this'
      */
-    self: {
+    "self": {
         processor: function (node, val) {
             return this;
         }
@@ -80,21 +80,21 @@ Form.prototype.optionsToGrab = {
     /**
      * URL to send form (if ajax form) <b>Default: "/"</b>
      */
-    url: {
+    "url": {
         domAttr: "action",
         value: "/"
     },
     /**
      * Method to send to send form (if ajax form) <b>Default: "POST"</b>
      */
-    method: {
+    "method": {
         domAttr: "method",
         value: "POST"
     },
     /**
      * Lock type when form sending <b>Default: "default"</b> @see sf.lock
      */
-    lockType: {
+    "lockType": {
         value: "default",
         domAttr: "data-lockType"
     },
@@ -108,7 +108,7 @@ Form.prototype.optionsToGrab = {
     /**
      * Pass custom template for form messages
      */
-    messages: {
+    "messages": {
         value: "",
         domAttr: "data-messages",
         processor: function (node, val, self) {
@@ -126,8 +126,8 @@ Form.prototype.optionsToGrab = {
     /**
      * Use ajax to submit form <b>Default: true</b>
      */
-    useAjax: {// attribute of form
-        value: true, //default value
+    "useAjax": { // Attribute of form
+        value: true, // Default value
         domAttr: "data-useAjax",
         processor: function (node, val) { // processor to process data before return
             if (typeof val === "boolean") {
@@ -150,20 +150,20 @@ Form.prototype.optionsToGrab = {
      *  //options contains all options after send
      * }
      */
-    ajaxCallback: {// attribute of form
-        value: false, //default value
+    "ajaxCallback": { // attribute of form
+        value: false, // Default value
         domAttr: "data-callback"
     },
-    beforeSubmitCallback: {// attribute of form
-        value: false, //default value
+    "beforeSubmitCallback": {// attribute of form
+        value: false, // Default value
         domAttr: "data-before-submit"
     },
-    afterSubmitCallback: {// attribute of form
-        value: false, //default value
+    "afterSubmitCallback": {// attribute of form
+        value: false, // Default value
         domAttr: "data-after-submit"
     },
-    headers: {// attribute of form
-        value: {"Accept": "application/json"}, //default value
+    "headers": {// attribute of form
+        value: {"Accept": "application/json"}, // Default value
         domAttr: "data-headers",
         processor: function (node, val, self) {
             if (val === void 0 || val == null) return this.value;
@@ -193,7 +193,8 @@ Form.prototype.mixMessagesOptions = function () {
  * @param {Event} e submit event
  */
 Form.prototype.onSubmit = function (e) {
-    if (this.sf.getInstance('lock', this.node)) {//on lock we should'n do any actions
+    if (this.sf.getInstance('lock', this.node)) {
+        // On lock we should'n do any actions
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -209,11 +210,10 @@ Form.prototype.onSubmit = function (e) {
         this.options.useAjax = false;
     }
     this.events.trigger("beforeSend", this.options);
-    //sf.events.performAction("beforeSubmit", this.options);
-    //this.events.performAction("beforeSubmit", this.options);
+    // sf.events.performAction("beforeSubmit", this.options);
+    // this.events.performAction("beforeSubmit", this.options);
 
     if (this.options.useAjax) {
-
         this.send(this.options);
 
         e.preventDefault();
@@ -240,7 +240,7 @@ Form.prototype.lock = function (remove) {
     }
 };
 
-//Form messages
+// Form messages
 Form.prototype.showFormMessage = formMessages.showFormMessage;
 Form.prototype.showFieldMessage = formMessages.showFieldMessage;
 Form.prototype.showFieldsMessages = formMessages.showFieldsMessages;
@@ -254,7 +254,7 @@ Form.prototype.processAnswer = function (answer) {
 
 /**
  * Send form to server
- * @param sendOptions
+ * @param {Object} sendOptions
  */
 Form.prototype.send = function (sendOptions) {
     var that = this;
@@ -282,13 +282,14 @@ Form.prototype.send = function (sendOptions) {
 
 /**
  * Serialize form
+ * @return {Object}
  */
 Form.prototype.getFormData = function () {
     if (!!window.FormData) {
         return new FormData(this.options.context);
     } else {
         console.log("Form `" + this.options.context + "` were processed without FormData.");
-        return new formToObject(this.options.context);
+        return new FormToObject(this.options.context);
     }
 };
 
@@ -310,7 +311,7 @@ Form.prototype.addEvents = function () {
             DOMNode: this.options.context,
             eventType: "submit",
             eventFunction: function (e) {
-                that.onSubmit.call(that, e)
+                that.onSubmit.call(that, e);
             }
         }
     ]);
@@ -321,9 +322,7 @@ Form.prototype.addEvents = function () {
  */
 Form.prototype.die = function () {
     this.DOMEvents.removeAll();
-    //todo don't we need to remove it's addons and plugins?
+    // TODO don't we need to remove it's addons and plugins?
 };
 
-export { Form as default };
-
-
+export {Form as default};

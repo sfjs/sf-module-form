@@ -1,8 +1,8 @@
 "use strict";
-//plugin in formMessages to iterate form inputs
+// Plugin in formMessages to iterate form inputs
 
-//todo comment all of this
-//todo ask @Systerr the reason of variable 'prefix'
+// TODO comment all of this
+// TODO ask @Systerr the reason of variable 'prefix'
 var notFound = [];
 
 /**
@@ -18,17 +18,18 @@ function findNodes(context, names, callback, prefix) {
             continue;
         }
 
-        var partOfSelector = (prefix) ? prefix + "[" + name + "]" : name,
-            type = Object.prototype.toString.call(names[name]),
-            selector = "[name='" + partOfSelector + "']";
+        var partOfSelector = (prefix) ? prefix + "[" + name + "]" : name;
+        var type = Object.prototype.toString.call(names[name]);
+        var selector = "[name='" + partOfSelector + "']";
+
         switch (type) {
             case '[object Object]':
-                findNodes(context, names[name], callback, partOfSelector);//call recursive
+                findNodes(context, names[name], callback, partOfSelector);
                 break;
             case '[object Array]':
                 names[name].forEach(function (el) {
                     "use strict";
-                    //TODO refactor this should call recursive
+                    // TODO refactor this should call recursive
                     var sel = "[name='" + partOfSelector + "[]']" + "[value='" + el + "']";
                     var nodes = context.querySelectorAll(sel);
                     if (nodes.length === 0) {
@@ -63,6 +64,7 @@ function findNodes(context, names, callback, prefix) {
  * @param {Object} names
  * @param {Function} callback
  * @param {String} [prefix]
+ * @return {String[]}
  */
 var iterateInputs = function (context, names, callback, prefix) {
     notFound = [];

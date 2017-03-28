@@ -11,19 +11,24 @@ var defaults = {
     fieldTemplate: '<div class="alert form-msg ${type}"><p class="msg">${text}</p></div>',
     fieldClose: '.btn-close',
     fieldPlace: 'bottom',
-    fieldPrefix: ''//for bootstrap: class="has-danger"
+    fieldPrefix: '' // For bootstrap: class="has-danger"
 };
 
-//often used alias
+// Often used alias
 defaults.levels.message = defaults.levels.success;
 
-//other aliases
-//PSR-3 severity levels mapping (debug, info, notice, warning, error, critical, alert, emergency)
-//https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
+// Other aliases
+// PSR-3 severity levels mapping (debug, info, notice, warning, error, critical, alert, emergency)
+// https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
 defaults.levels.debug = defaults.levels.success;
 defaults.levels.info = defaults.levels.notice = defaults.levels.info;
 defaults.levels.danger = defaults.levels.critical = defaults.levels.alert = defaults.levels.emergency = defaults.levels.error;
 
+/**
+ * @param {Object|String} message
+ * @param {String} type
+ * @return {Object}
+ */
 function prepareMessageObject(message, type) {
     if (Object.prototype.toString.call(message) !== "[object Object]") {
         message = {text: message, type: type};
@@ -37,7 +42,9 @@ module.exports = {
     defaults: defaults,
     showMessages: function (answer) {
         if (!answer) return;
-        var isMsg = false, that = this;
+
+        var isMsg = false;
+        var that = this;
 
         for (var type in this.options.messages.levels) {
             if (answer[type]) {
@@ -93,9 +100,12 @@ module.exports = {
         that._messages = [];
     },
     showFormMessage: function (message, type) {
-        message = prepareMessageObject(message, type);
+        var msgEl;
+        var parent;
+        var tpl = this.options.messages.template;
+        var parser = new DOMParser();
 
-        var msgEl, parent, tpl = this.options.messages.template, parser = new DOMParser();
+        message = prepareMessageObject(message, type);
 
         for (var item in message) {
             if (!message.hasOwnProperty(item)) return;
@@ -110,7 +120,7 @@ module.exports = {
             this.node.insertBefore(msgEl, this.node.firstChild);
         } else {
             parent = document.querySelector(this.options.messages.place);
-            parent.appendChild(msgEl)
+            parent.appendChild(msgEl);
         }
         this._messages.push({el: msgEl, close: msgEl.querySelector(this.options.messages.close)});
     },
@@ -121,9 +131,12 @@ module.exports = {
      * @param {Boolean} [isContainer]
      */
     showFieldMessage: function (el, message, type, isContainer) {
-        var field = isContainer ? el : sf.helpers.domTools.closest(el, this.options.messages.field),
-            msgEl, tpl = this.options.messages.fieldTemplate;
+        var field = isContainer ? el : sf.helpers.domTools.closest(el, this.options.messages.field);
+        var msgEl;
+        var tpl = this.options.messages.fieldTemplate;
+
         if (!field) return;
+
         var parser = new DOMParser();
         message = prepareMessageObject(message, type);
 
@@ -142,7 +155,7 @@ module.exports = {
             field.insertBefore(msgEl, field.firstChild);
         } else {
             field = field.querySelector(this.options.messages.fieldPlace);
-            field.appendChild(msgEl)
+            field.appendChild(msgEl);
         }
 
         this._messages.push({
@@ -153,16 +166,16 @@ module.exports = {
         });
     },
     showFieldsMessages: function (messages, type) {
-        var that = this,
-            notFound = sf.iterateInputs(this.node, messages, function (el, message) {
-                that.showFieldMessage(el, message, type)
-            });
+        var that = this;
+        var notFound = sf.iterateInputs(this.node, messages, function (el, message) {
+            that.showFieldMessage(el, message, type);
+        });
 
         notFound.forEach(function (msgObj) {
-            Object.keys(msgObj).forEach(function(name){
+            Object.keys(msgObj).forEach(function (name) {
                 var container = that.node.querySelector('[data-message-placeholder="' + name + '"]');
                 if (container) {
-                    //todo check container.dataset.messageVariant? variants are "field" and "form"
+                    // TODO check container.dataset.messageVariant? variants are "field" and "form"
                     that.showFieldMessage(container, msgObj[name], type, true);
                 }
             });
