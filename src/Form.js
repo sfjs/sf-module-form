@@ -47,10 +47,10 @@ Form.prototype._construct = function (sf, node, options) {
      * @type {DOMEvents}
      * @inheritDoc
      * */
-    this.DOMEvents = new this.sf.modules.helpers.DOMEvents();
+    this.DOMEvents = new this.sf.helpers.DOMEvents();
     this.addEvents();
 
-    this.events = new this.sf.modules.core.Events(["beforeSend", "success", "error", "always"]);
+    this.events = new this.sf.core.Events(["beforeSend", "success", "error", "always"]);
     sf.iterateInputs = iterateInputs;
 };
 
